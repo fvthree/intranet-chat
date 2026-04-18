@@ -36,3 +36,13 @@ export type ConversationListItem = {
   unreadCount: number;
   lastMessage: LastMessagePreview | null;
 };
+
+/** `POST /api/conversations/direct` and `POST /api/conversations/channels` response. */
+export type ConversationResponse = {
+  id: string;
+  type: string;
+  name: string | null;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+};

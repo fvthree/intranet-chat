@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
@@ -20,16 +21,19 @@ public class ConversationService {
   private final ConversationRepository conversationRepository;
   private final ConversationParticipantRepository participantRepository;
   private final ConversationListingQuery conversationListingQuery;
+  private final R2dbcEntityTemplate r2dbcEntityTemplate;
 
   public ConversationService(
       UserRepository userRepository,
       ConversationRepository conversationRepository,
       ConversationParticipantRepository participantRepository,
-      ConversationListingQuery conversationListingQuery) {
+      ConversationListingQuery conversationListingQuery,
+      R2dbcEntityTemplate r2dbcEntityTemplate) {
     this.userRepository = userRepository;
     this.conversationRepository = conversationRepository;
     this.participantRepository = participantRepository;
     this.conversationListingQuery = conversationListingQuery;
+    this.r2dbcEntityTemplate = r2dbcEntityTemplate;
   }
 
   public Mono<List<ConversationListItemResponse>> listForUser(UUID userId) {
@@ -49,9 +53,16 @@ public class ConversationService {
     ConversationParticipant creator =
         new ConversationParticipant(
             UUID.randomUUID(), convId, currentUserId, now, null, null);
-    return conversationRepository
-        .save(conv)
-        .flatMap(saved -> participantRepository.save(creator).thenReturn(saved))
+    // Application-assigned IDs: CrudRepository.save() issues UPDATE; use insert for new rows.
+    return r2dbcEntityTemplate
+        .insert(Conversation.class)
+        .using(conv)
+        .flatMap(
+            saved ->
+                r2dbcEntityTemplate
+                    .insert(ConversationParticipant.class)
+                    .using(creator)
+                    .thenReturn(saved))
         .map(ConversationResponse::from);
   }
 
@@ -87,9 +98,16 @@ public class ConversationService {
         new ConversationParticipant(UUID.randomUUID(), convId, currentUserId, now, null, null);
     ConversationParticipant p2 =
         new ConversationParticipant(UUID.randomUUID(), convId, otherUserId, now, null, null);
-    return conversationRepository
-        .save(conv)
-        .flatMap(saved -> participantRepository.save(p1).then(participantRepository.save(p2)).thenReturn(saved));
+    return r2dbcEntityTemplate
+        .insert(Conversation.class)
+        .using(conv)
+        .flatMap(
+            saved ->
+                r2dbcEntityTemplate
+                    .insert(ConversationParticipant.class)
+                    .using(p1)
+                    .then(r2dbcEntityTemplate.insert(ConversationParticipant.class).using(p2))
+                    .thenReturn(saved));
   }
 
   public Mono<ConversationResponse> getForParticipant(UUID conversationId, UUID userId) {

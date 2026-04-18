@@ -32,7 +32,12 @@ function formatWhen(iso: string | undefined): string {
   }
 }
 
-export function ConversationList() {
+export function ConversationList({
+  refreshToken = 0,
+}: {
+  /** Increment to refetch without remounting (e.g. after creating a conversation without navigating away). */
+  refreshToken?: number;
+}) {
   const [items, setItems] = useState<ConversationListItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +58,7 @@ export function ConversationList() {
 
   useEffect(() => {
     void load();
-  }, [load]);
+  }, [load, refreshToken]);
 
   if (loading) {
     return (
@@ -83,8 +88,7 @@ export function ConversationList() {
       <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50/80 p-8 text-center text-sm text-gray-600">
         <p className="font-medium text-gray-800">No conversations yet</p>
         <p className="mt-2">
-          Channels and DMs will show here once they exist. You can create new ones in a later phase
-          from this app.
+          Use <strong>New direct message</strong> or <strong>New channel</strong> above to create one.
         </p>
       </div>
     );

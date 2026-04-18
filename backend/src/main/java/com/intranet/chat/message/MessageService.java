@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
@@ -19,16 +20,19 @@ public class MessageService {
   private final ConversationParticipantRepository participantRepository;
   private final MessageRepository messageRepository;
   private final RealtimeMessagePublisher realtimeMessagePublisher;
+  private final R2dbcEntityTemplate r2dbcEntityTemplate;
 
   public MessageService(
       ConversationRepository conversationRepository,
       ConversationParticipantRepository participantRepository,
       MessageRepository messageRepository,
-      RealtimeMessagePublisher realtimeMessagePublisher) {
+      RealtimeMessagePublisher realtimeMessagePublisher,
+      R2dbcEntityTemplate r2dbcEntityTemplate) {
     this.conversationRepository = conversationRepository;
     this.participantRepository = participantRepository;
     this.messageRepository = messageRepository;
     this.realtimeMessagePublisher = realtimeMessagePublisher;
+    this.r2dbcEntityTemplate = r2dbcEntityTemplate;
   }
 
   public Mono<MessageResponse> send(UUID conversationId, UUID senderId, SendMessageRequest request) {
@@ -59,8 +63,10 @@ public class MessageService {
                   UUID id = UUID.randomUUID();
                   Message m =
                       new Message(id, conversationId, senderId, content, now, now, false);
-                  return messageRepository
-                      .save(m)
+                  // Application-assigned message id: use insert, not save() (which would UPDATE).
+                  return r2dbcEntityTemplate
+                      .insert(Message.class)
+                      .using(m)
                       .flatMap(
                           saved ->
                               touchConversation(conversationId, now)
