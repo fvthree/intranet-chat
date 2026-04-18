@@ -1,18 +1,15 @@
-import Link from "next/link";
-import { intranetRoutes } from "@/config/intranet-routes";
+import { LoginForm } from "@/app/intranet/login/login-form";
+
+export const metadata = {
+  title: "Sign in — Intranet chat",
+};
 
 export default function Home() {
   return (
-    <div className="space-y-3">
-      <h1 className="text-xl font-semibold text-gray-900">
-        Isomorphic starter template
-      </h1>
-      <p className="text-gray-600">
-        Intranet chat UI:{" "}
-        <Link href={intranetRoutes.home} className="text-primary underline">
-          /intranet
-        </Link>
-      </p>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-12">
+      <div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
+        <LoginForm />
+      </div>
     </div>
   );
 }

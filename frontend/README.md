@@ -2,8 +2,9 @@
 
 ### Intranet chat (this repo)
 
-- **Phase F1** adds an API client under `src/lib/intranet-api/`, env `NEXT_PUBLIC_API_BASE_URL`, and routes under **`/intranet`** (including **`/intranet/dev`** to paste a JWT and call `GET /api/users/me`).
-- Copy [`.env.example`](.env.example) to `.env.local` and point the URL at your Spring backend (default `http://localhost:8080`).
+- **Phase F1** adds an API client under `src/lib/intranet-api/`, env `NEXT_PUBLIC_API_BASE_URL`, and routes under **`/intranet`**.
+- **Phase F2** adds **`/intranet/login`** (`POST /api/auth/login`), session token storage, **Log out**, and a **`RequireAuth`** guard on **`/intranet`** and **`/intranet/dev`**. Unauthenticated users are redirected to the login page.
+- Copy [`.env.example`](.env.example) to `.env.local` and point the URL at your Spring backend (default `http://localhost:8080`). The backend enables **CORS** for `http://localhost:*` / `http://127.0.0.1:*` so browser `fetch` from the Next dev server works.
 - See [`../instructions/intranet-chat-frontend-plan.md`](../instructions/intranet-chat-frontend-plan.md) for later phases.
 
 ---

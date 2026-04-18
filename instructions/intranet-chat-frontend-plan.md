@@ -86,6 +86,14 @@ Login wired to `POST /api/auth/login`, token persistence, and protected routes.
 - Valid credentials load the authenticated shell; `GET /api/users/me` matches the logged-in user.
 - Invalid credentials show an error and do not persist a token.
 
+### Implemented in this repo
+
+- `POST /api/auth/login` via `src/lib/intranet-api/auth.ts` and `postJsonUnauthenticated` (failed logins do not trigger the global 401 redirect).
+- Login UI: `src/app/intranet/login/login-form.tsx`; metadata in `login/page.tsx`.
+- Protected area: route group `src/app/intranet/(dashboard)/` with `RequireAuth` in `layout.tsx` (`src/components/intranet/require-auth.tsx`).
+- Logout on intranet home clears `sessionStorage` and returns to `/intranet/login`.
+- Backend: CORS for local dev in `SecurityConfig` (`CorsConfigurationSource` + `.cors(Customizer.withDefaults())`).
+
 ---
 
 ## Phase F3 — Current user & profile strip

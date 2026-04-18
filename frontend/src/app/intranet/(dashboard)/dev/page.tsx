@@ -48,13 +48,15 @@ export default function IntranetApiDevPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <Title as="h2" className="text-xl">
-          API dev tools (Phase F1)
+          API dev tools
         </Title>
         <Text className="mt-2 text-gray-600">
           Backend base URL:{" "}
-          <code className="rounded bg-gray-100 px-1">{getApiBaseUrl()}</code> — set{" "}
-          <code className="rounded bg-gray-100 px-1">NEXT_PUBLIC_API_BASE_URL</code> in{" "}
-          <code className="rounded bg-gray-100 px-1">.env.local</code> if needed.
+          <code className="rounded bg-gray-100 px-1">
+            {getApiBaseUrl() || "same-origin /api (Next proxies to backend)"}
+          </code>{" "}
+          — set <code className="rounded bg-gray-100 px-1">NEXT_PUBLIC_API_BASE_URL</code> only if
+          the browser must call the API host directly.
         </Text>
       </div>
 

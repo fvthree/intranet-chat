@@ -3,6 +3,18 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  /**
+   * Proxy API calls through the Next dev server so the browser stays same-origin
+   * (http://localhost:3000 → /api/...), avoiding CORS and fixing "Failed to fetch"
+   * when the UI is opened via a host the backend does not allow (e.g. LAN IP).
+   *
+   * Target is server-side only; override with BACKEND_ORIGIN if the API is not on 8080.
+   */
+  async rewrites() {
+    const backend = process.env.BACKEND_ORIGIN ?? "http://127.0.0.1:8080";
+    return [{ source: "/api/:path*", destination: `${backend}/api/:path*` }];
+  },
+};
 
 module.exports = withBundleAnalyzer(nextConfig);
