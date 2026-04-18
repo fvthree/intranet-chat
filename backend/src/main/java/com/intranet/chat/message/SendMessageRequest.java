@@ -1,0 +1,9 @@
+package com.intranet.chat.message;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record SendMessageRequest(
+    @NotBlank(message = "content is required")
+        @Size(max = 10_000, message = "content must be at most 10000 characters")
+        String content) {}

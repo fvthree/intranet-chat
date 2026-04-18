@@ -38,8 +38,13 @@ cd backend
 - Application: `http://localhost:8080`
 - Public health: `GET /api/health`
 - Actuator health (Kubernetes-style probes): `GET /actuator/health`
-- Login: `POST /api/auth/login` with JSON body `{"username":"demo","password":"password"}` (demo user is created by Flyway migration `V3__seed_demo_user.sql`; change passwords in production).
+- Login: `POST /api/auth/login` with JSON body `{"username":"demo","password":"password"}` (seed users: `demo` in `V3__seed_demo_user.sql`, `alice` in `V5__seed_second_user.sql`; both use password `password` for local dev only).
 - Current user: `GET /api/users/me` with header `Authorization: Bearer <accessToken>` from login.
+- Direct messaging (Phase 3), all require `Authorization: Bearer <accessToken>`:
+  - `POST /api/conversations/direct` — body `{"otherUserId":"<uuid>"}` — create or return existing 1:1 conversation (no duplicate pairs).
+  - `GET /api/conversations/{conversationId}` — conversation details if you are a participant.
+  - `POST /api/conversations/{conversationId}/messages` — body `{"content":"..."}` — send a message (blank content is rejected).
+  - `GET /api/conversations/{conversationId}/messages?page=0&size=50` — paginated history (`size` 1–200).
 - Other `GET /api/**` routes require a valid JWT unless listed as public above.
 
 ## Troubleshooting
