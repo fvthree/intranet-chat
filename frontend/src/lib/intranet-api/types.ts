@@ -16,3 +16,23 @@ export type LoginResponse = {
   tokenType: string;
   expiresInSeconds: number;
 };
+
+/** Embedded in `GET /api/conversations` rows. */
+export type LastMessagePreview = {
+  messageId: string;
+  contentPreview: string;
+  senderId: string;
+  createdAt: string;
+};
+
+/** One row from `GET /api/conversations` (Jackson camelCase). */
+export type ConversationListItem = {
+  id: string;
+  type: string;
+  name: string | null;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  unreadCount: number;
+  lastMessage: LastMessagePreview | null;
+};

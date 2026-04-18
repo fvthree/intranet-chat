@@ -5,4 +5,5 @@ export const intranetRoutes = {
   login: "/",
   dev: "/intranet/dev",
   settings: "/intranet/settings",
+  conversation: (id: string) => `/intranet/conversations/${id}`,
 } as const;
