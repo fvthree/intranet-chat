@@ -32,6 +32,9 @@ class IntranetChatApplicationTests {
   /** Not seeded; used for non-participant access checks. */
   private static final String NON_MEMBER_USER_ID = "770e8400-e29b-41d4-a716-446655440003";
 
+  private static final String SEED_CHANNEL_ENGINEERING_ID =
+      "880e8400-e29b-41d4-a716-446655440012";
+
   @Container
   static final PostgreSQLContainer<?> postgres =
       new PostgreSQLContainer<>(DockerImageName.parse("postgres:16-alpine"))
@@ -159,7 +162,10 @@ class IntranetChatApplicationTests {
         .uri("/api/conversations")
         .exchange()
         .expectStatus()
-        .isNotFound();
+        .isOk()
+        .expectBody()
+        .jsonPath("$")
+        .isArray();
   }
 
   private String loginAccessToken(String username, String password) throws Exception {
@@ -377,5 +383,156 @@ class IntranetChatApplicationTests {
         .exchange()
         .expectStatus()
         .isBadRequest();
+  }
+
+  @Test
+  void phase4_listIncludesSeededChannels() throws Exception {
+    String token = loginAccessToken("demo", "password");
+    byte[] body =
+        webTestClient
+            .get()
+            .uri("/api/conversations")
+            .headers(h -> h.setBearerAuth(token))
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody()
+            .returnResult()
+            .getResponseBody();
+    JsonNode arr = objectMapper.readTree(body);
+    Assertions.assertTrue(arr.isArray());
+    Assertions.assertTrue(arr.size() >= 2);
+    boolean hasGeneral = false;
+    boolean hasEng = false;
+    for (JsonNode n : arr) {
+      if ("general".equals(n.path("name").asText())
+          && "CHANNEL".equals(n.path("type").asText())) {
+        hasGeneral = true;
+      }
+      if ("engineering".equals(n.path("name").asText())
+          && "CHANNEL".equals(n.path("type").asText())) {
+        hasEng = true;
+      }
+    }
+    Assertions.assertTrue(hasGeneral && hasEng);
+  }
+
+  @Test
+  void phase4_channelMessageUpdatesLastPreviewAndOrdering() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    String engId = SEED_CHANNEL_ENGINEERING_ID;
+
+    webTestClient
+        .post()
+        .uri("/api/conversations/{id}/messages", engId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(h -> h.setBearerAuth(demoToken))
+        .bodyValue(Map.of("content", "Ship checklist approved"))
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+    byte[] listBody =
+        webTestClient
+            .get()
+            .uri("/api/conversations")
+            .headers(h -> h.setBearerAuth(demoToken))
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody()
+            .returnResult()
+            .getResponseBody();
+    JsonNode arr = objectMapper.readTree(listBody);
+    JsonNode engineering = null;
+    int engIndex = -1;
+    int generalIndex = -1;
+    for (int i = 0; i < arr.size(); i++) {
+      JsonNode n = arr.get(i);
+      if (engId.equals(n.path("id").asText())) {
+        engineering = n;
+        engIndex = i;
+      }
+      if ("general".equals(n.path("name").asText())) {
+        generalIndex = i;
+      }
+    }
+    Assertions.assertNotNull(engineering);
+    Assertions.assertEquals(
+        "Ship checklist approved",
+        engineering.path("lastMessage").path("contentPreview").asText());
+    Assertions.assertTrue(generalIndex >= 0);
+    Assertions.assertTrue(engIndex < generalIndex, "engineering should sort above general after activity");
+  }
+
+  @Test
+  void phase4_nonMemberCannotReadChannelMessages() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    String aliceToken = loginAccessToken("alice", "password");
+
+    String soloId =
+        objectMapper
+            .readTree(
+                webTestClient
+                    .post()
+                    .uri("/api/conversations/channels")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .headers(h -> h.setBearerAuth(demoToken))
+                    .bodyValue(Map.of("name", "solo-room"))
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .returnResult()
+                    .getResponseBody())
+            .path("id")
+            .asText();
+
+    webTestClient
+        .get()
+        .uri("/api/conversations/{id}/messages", soloId)
+        .headers(h -> h.setBearerAuth(aliceToken))
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  @Test
+  void phase4_listIncludesDirectAndChannelTypes() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    webTestClient
+        .post()
+        .uri("/api/conversations/direct")
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(h -> h.setBearerAuth(demoToken))
+        .bodyValue(Map.of("otherUserId", ALICE_USER_ID))
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+    byte[] body =
+        webTestClient
+            .get()
+            .uri("/api/conversations")
+            .headers(h -> h.setBearerAuth(demoToken))
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody()
+            .returnResult()
+            .getResponseBody();
+    JsonNode arr = objectMapper.readTree(body);
+    boolean hasDirect = false;
+    boolean hasChannel = false;
+    for (JsonNode n : arr) {
+      String t = n.path("type").asText();
+      if ("DIRECT".equals(t)) {
+        hasDirect = true;
+      }
+      if ("CHANNEL".equals(t)) {
+        hasChannel = true;
+      }
+    }
+    Assertions.assertTrue(hasDirect && hasChannel);
   }
 }

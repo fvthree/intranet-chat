@@ -45,6 +45,11 @@ cd backend
   - `GET /api/conversations/{conversationId}` — conversation details if you are a participant.
   - `POST /api/conversations/{conversationId}/messages` — body `{"content":"..."}` — send a message (blank content is rejected).
   - `GET /api/conversations/{conversationId}/messages?page=0&size=50` — paginated history (`size` 1–200).
+- Team channels and listing (Phase 4), same auth as above:
+  - `GET /api/conversations` — conversations you participate in (direct and channels), ordered by latest activity (`updated_at`), each item may include `lastMessage` (preview of the latest non-deleted message).
+  - `POST /api/conversations/channels` — body `{"name":"..."}` — create a channel and join as the first member.
+  - Channel messages use the same send/history routes as direct chats; membership is enforced for channels and DMs.
+  - Local seed data (`V6__seed_team_channels.sql`) adds `general` and `engineering` channels with `demo` and `alice` as members.
 - Other `GET /api/**` routes require a valid JWT unless listed as public above.
 
 ## Troubleshooting

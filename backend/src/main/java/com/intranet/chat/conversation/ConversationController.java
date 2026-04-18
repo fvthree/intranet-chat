@@ -8,6 +8,7 @@ import com.intranet.chat.security.CurrentUserId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,16 @@ public class ConversationController {
     this.currentUserId = currentUserId;
     this.conversationService = conversationService;
     this.messageService = messageService;
+  }
+
+  @GetMapping
+  public Mono<List<ConversationListItemResponse>> list() {
+    return currentUserId.get().flatMap(conversationService::listForUser);
+  }
+
+  @PostMapping("/channels")
+  public Mono<ConversationResponse> createChannel(@Valid @RequestBody CreateChannelRequest body) {
+    return currentUserId.get().flatMap(uid -> conversationService.createChannel(uid, body));
   }
 
   @PostMapping("/direct")

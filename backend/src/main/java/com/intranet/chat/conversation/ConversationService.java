@@ -3,6 +3,7 @@ package com.intranet.chat.conversation;
 import com.intranet.chat.user.User;
 import com.intranet.chat.user.UserRepository;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,18 +14,45 @@ import reactor.core.publisher.Mono;
 public class ConversationService {
 
   private static final String TYPE_DIRECT = "DIRECT";
+  private static final String TYPE_CHANNEL = "CHANNEL";
 
   private final UserRepository userRepository;
   private final ConversationRepository conversationRepository;
   private final ConversationParticipantRepository participantRepository;
+  private final ConversationListingQuery conversationListingQuery;
 
   public ConversationService(
       UserRepository userRepository,
       ConversationRepository conversationRepository,
-      ConversationParticipantRepository participantRepository) {
+      ConversationParticipantRepository participantRepository,
+      ConversationListingQuery conversationListingQuery) {
     this.userRepository = userRepository;
     this.conversationRepository = conversationRepository;
     this.participantRepository = participantRepository;
+    this.conversationListingQuery = conversationListingQuery;
+  }
+
+  public Mono<List<ConversationListItemResponse>> listForUser(UUID userId) {
+    return conversationListingQuery.listForUser(userId).collectList();
+  }
+
+  public Mono<ConversationResponse> createChannel(UUID currentUserId, CreateChannelRequest request) {
+    String trimmed = request.name().trim();
+    if (trimmed.isEmpty()) {
+      return Mono.error(
+          new ResponseStatusException(HttpStatus.BAD_REQUEST, "Channel name cannot be blank"));
+    }
+    Instant now = Instant.now();
+    UUID convId = UUID.randomUUID();
+    Conversation conv =
+        new Conversation(convId, TYPE_CHANNEL, trimmed, null, currentUserId, now, now);
+    ConversationParticipant creator =
+        new ConversationParticipant(
+            UUID.randomUUID(), convId, currentUserId, now, null, null);
+    return conversationRepository
+        .save(conv)
+        .flatMap(saved -> participantRepository.save(creator).thenReturn(saved))
+        .map(ConversationResponse::from);
   }
 
   public Mono<ConversationResponse> createOrOpenDirect(UUID currentUserId, UUID otherUserId) {
