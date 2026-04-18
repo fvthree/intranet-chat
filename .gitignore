@@ -1,0 +1,37 @@
+# --- Java / Maven / Gradle ---
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+*.log
+
+# --- Node / React ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+.cache/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
