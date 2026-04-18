@@ -2,6 +2,7 @@ package com.intranet.chat.conversation;
 
 import java.util.UUID;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface ConversationParticipantRepository
@@ -11,4 +12,6 @@ public interface ConversationParticipantRepository
 
   Mono<ConversationParticipant> findByConversationIdAndUserId(
       UUID conversationId, UUID userId);
+
+  Flux<ConversationParticipant> findByConversationId(UUID conversationId);
 }

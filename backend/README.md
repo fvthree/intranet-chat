@@ -1,6 +1,6 @@
 # Intranet chat — backend (Spring WebFlux)
 
-Reactive REST API for authentication, user profile, direct messages, team channels, conversation listing, and per-user unread counts with mark-as-read. Persistence uses **PostgreSQL** (R2DBC + Flyway). **Redis** is on the classpath and configured for local runs, but application features do not use it yet (reserved for later phases).
+Reactive REST API for authentication, user profile, direct messages, team channels, conversation listing, per-user unread counts with mark-as-read, **WebSocket realtime delivery**, and **presence** backed by **Redis**. Persistence uses **PostgreSQL** (R2DBC + Flyway).
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ Base URL: `http://localhost:8080` (override with `SERVER_PORT`).
 | Area | Auth |
 |------|------|
 | Health and login | Public (see below) |
-| `/api/users/me`, `/api/conversations/**` | `Authorization: Bearer <accessToken>` |
+| `/api/users/me`, `/api/conversations/**`, `/api/presence/**` | `Authorization: Bearer <accessToken>` |
 
 ### Public endpoints
 
@@ -74,6 +74,11 @@ Base URL: `http://localhost:8080` (override with `SERVER_PORT`).
 - `GET /api/conversations/{conversationId}/messages?page=0&size=50` — paginated history; `size` must be between 1 and 200.
 
 Access to messages is enforced for participants only (direct chats and channels).
+
+**Presence and WebSocket (Phase 6)**
+
+- `GET /api/presence/{userId}` — returns `{"userId":"...","status":"ONLINE"|"OFFLINE"}` using Redis keys `presence:user:{uuid}` (TTL refreshed while a WebSocket is connected).
+- **WebSocket** `GET /ws?token=<jwt>` or `?access_token=<jwt>` — browsers cannot send `Authorization` on the handshake, so pass the same access token from login as a query parameter. The server validates it with the same HS256 decoder as REST. After connect, other connected clients may receive `{"type":"PRESENCE","userId":"...","status":"ONLINE"|"OFFLINE"}`; when someone sends a chat message, other participants who are connected receive `{"type":"MESSAGE_NEW","conversationId":"...","message":{...}}` (same shape as REST message payloads). Only **participants** of that conversation receive the push (the sender does not get a duplicate over WS from their own send).
 
 ## Seed users and data (local development)
 

@@ -4,18 +4,28 @@ import static org.springframework.security.test.web.reactive.server.SecurityMock
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.socket.WebSocketMessage;
+import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
+import reactor.core.Disposable;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -68,6 +78,8 @@ class IntranetChatApplicationTests {
 
   @Autowired private WebTestClient webTestClient;
   @Autowired private ObjectMapper objectMapper;
+
+  @LocalServerPort private int serverPort;
 
   @Test
   void contextLoads() {}
@@ -673,6 +685,112 @@ class IntranetChatApplicationTests {
         .exchange()
         .expectStatus()
         .isForbidden();
+  }
+
+  @Test
+  void phase6_presenceRestReflectsRedisAfterWebSocketConnect() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    String aliceToken = loginAccessToken("alice", "password");
+    String wsUrl =
+        "ws://127.0.0.1:"
+            + serverPort
+            + "/ws?token="
+            + URLEncoder.encode(demoToken, StandardCharsets.UTF_8);
+    Disposable connection =
+        new ReactorNettyWebSocketClient()
+            .execute(URI.create(wsUrl), session -> session.receive().then())
+            .subscribe();
+    try {
+      Thread.sleep(600);
+      webTestClient
+          .get()
+          .uri("/api/presence/{id}", DEMO_USER_ID)
+          .headers(h -> h.setBearerAuth(aliceToken))
+          .exchange()
+          .expectStatus()
+          .isOk()
+          .expectBody()
+          .jsonPath("$.status")
+          .isEqualTo("ONLINE");
+    } finally {
+      connection.dispose();
+      Thread.sleep(800);
+    }
+    webTestClient
+        .get()
+        .uri("/api/presence/{id}", DEMO_USER_ID)
+        .headers(h -> h.setBearerAuth(aliceToken))
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.status")
+        .isEqualTo("OFFLINE");
+  }
+
+  @Test
+  void phase6_newMessageDeliveredOverWebSocket() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    String aliceToken = loginAccessToken("alice", "password");
+    String dmId =
+        objectMapper
+            .readTree(
+                webTestClient
+                    .post()
+                    .uri("/api/conversations/direct")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .headers(h -> h.setBearerAuth(demoToken))
+                    .bodyValue(Map.of("otherUserId", ALICE_USER_ID))
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .returnResult()
+                    .getResponseBody())
+            .path("id")
+            .asText();
+
+    String wsUrl =
+        "ws://127.0.0.1:"
+            + serverPort
+            + "/ws?token="
+            + URLEncoder.encode(demoToken, StandardCharsets.UTF_8);
+    CountDownLatch latch = new CountDownLatch(1);
+    AtomicReference<String> payload = new AtomicReference<>();
+    Disposable connection =
+        new ReactorNettyWebSocketClient()
+            .execute(
+                URI.create(wsUrl),
+                session ->
+                    session
+                        .receive()
+                        .map(WebSocketMessage::getPayloadAsText)
+                        .doOnNext(
+                            text -> {
+                              if (text.contains("MESSAGE_NEW")) {
+                                payload.set(text);
+                                latch.countDown();
+                              }
+                            })
+                        .then())
+            .subscribe();
+    try {
+      Thread.sleep(600);
+      webTestClient
+          .post()
+          .uri("/api/conversations/{id}/messages", dmId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .headers(h -> h.setBearerAuth(aliceToken))
+          .bodyValue(Map.of("content", "Realtime payload"))
+          .exchange()
+          .expectStatus()
+          .isOk();
+      Assertions.assertTrue(latch.await(15, TimeUnit.SECONDS), "expected WS push");
+      Assertions.assertTrue(payload.get().contains("MESSAGE_NEW"));
+      Assertions.assertTrue(payload.get().contains("Realtime payload"));
+    } finally {
+      connection.dispose();
+    }
   }
 
   private long unreadCountForConversation(String bearerToken, String conversationId)

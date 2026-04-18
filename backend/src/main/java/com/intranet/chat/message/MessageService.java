@@ -3,6 +3,7 @@ package com.intranet.chat.message;
 import com.intranet.chat.conversation.Conversation;
 import com.intranet.chat.conversation.ConversationParticipantRepository;
 import com.intranet.chat.conversation.ConversationRepository;
+import com.intranet.chat.realtime.RealtimeMessagePublisher;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
@@ -17,14 +18,17 @@ public class MessageService {
   private final ConversationRepository conversationRepository;
   private final ConversationParticipantRepository participantRepository;
   private final MessageRepository messageRepository;
+  private final RealtimeMessagePublisher realtimeMessagePublisher;
 
   public MessageService(
       ConversationRepository conversationRepository,
       ConversationParticipantRepository participantRepository,
-      MessageRepository messageRepository) {
+      MessageRepository messageRepository,
+      RealtimeMessagePublisher realtimeMessagePublisher) {
     this.conversationRepository = conversationRepository;
     this.participantRepository = participantRepository;
     this.messageRepository = messageRepository;
+    this.realtimeMessagePublisher = realtimeMessagePublisher;
   }
 
   public Mono<MessageResponse> send(UUID conversationId, UUID senderId, SendMessageRequest request) {
@@ -57,7 +61,11 @@ public class MessageService {
                       new Message(id, conversationId, senderId, content, now, now, false);
                   return messageRepository
                       .save(m)
-                      .flatMap(saved -> touchConversation(conversationId, now).thenReturn(saved));
+                      .flatMap(
+                          saved ->
+                              touchConversation(conversationId, now)
+                                  .then(realtimeMessagePublisher.publishNewMessage(saved))
+                                  .thenReturn(saved));
                 }))
         .map(MessageResponse::from);
   }

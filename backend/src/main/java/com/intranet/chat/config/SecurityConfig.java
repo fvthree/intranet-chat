@@ -51,7 +51,8 @@ public class SecurityConfig {
                     "/actuator/health/**",
                     "/actuator/info",
                     "/api/health",
-                    "/api/auth/login")
+                    "/api/auth/login",
+                    "/ws")
                 .permitAll()
                 .pathMatchers("/api/**")
                 .authenticated()
