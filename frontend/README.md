@@ -1,5 +1,13 @@
 ## Isomorphic Starter Template
 
+### Intranet chat (this repo)
+
+- **Phase F1** adds an API client under `src/lib/intranet-api/`, env `NEXT_PUBLIC_API_BASE_URL`, and routes under **`/intranet`** (including **`/intranet/dev`** to paste a JWT and call `GET /api/users/me`).
+- Copy [`.env.example`](.env.example) to `.env.local` and point the URL at your Spring backend (default `http://localhost:8080`).
+- See [`../instructions/intranet-chat-frontend-plan.md`](../instructions/intranet-chat-frontend-plan.md) for later phases.
+
+---
+
 First, run the development server:
 
 ```bash
