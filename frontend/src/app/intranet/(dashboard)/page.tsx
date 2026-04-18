@@ -23,7 +23,7 @@ export default function IntranetHomePage() {
       </div>
       <p className="text-sm text-gray-600">
         From <code className="rounded bg-gray-100 px-1 text-xs">GET /api/conversations</code> — newest
-        activity first. Open a row for the thread (message UI in Phase F6).
+        activity first. Open a row to read and send messages (REST thread).
       </p>
       <CreateConversationForms onCreated={handleCreated} />
       <ConversationList refreshToken={listRefresh} />

@@ -46,3 +46,27 @@ export type ConversationResponse = {
   createdAt: string;
   updatedAt: string;
 };
+
+/** `GET /api/conversations/{id}/messages` page. */
+export type MessagePageResponse = {
+  messages: MessageResponse[];
+  page: number;
+  size: number;
+  totalElements: number;
+  hasNext: boolean;
+};
+
+/** One message from list/send responses. */
+export type MessageResponse = {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  content: string;
+  createdAt: string;
+};
+
+/** `POST /api/conversations/{id}/read` response. */
+export type MarkReadResponse = {
+  lastReadMessageId: string | null;
+  lastReadAt: string | null;
+};

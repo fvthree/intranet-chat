@@ -23,3 +23,8 @@ export function createChannel(body: { name: string }): Promise<ConversationRespo
     body,
   );
 }
+
+/** `GET /api/conversations/{id}` — participant-only. */
+export function getConversation(conversationId: string): Promise<ConversationResponse> {
+  return apiGetJson<ConversationResponse>(`/api/conversations/${encodeURIComponent(conversationId)}`);
+}
