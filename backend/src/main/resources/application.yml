@@ -2,11 +2,11 @@ spring:
   application:
     name: intranet-chat
   datasource:
-    url: jdbc:postgresql://${APP_DB_HOST:localhost}:${APP_DB_PORT:5432}/${APP_DB_NAME:intranet_chat}
+    url: jdbc:postgresql://${APP_DB_HOST:localhost}:${APP_DB_PORT:5433}/${APP_DB_NAME:intranet_chat}
     username: ${APP_DB_USER:postgres}
     password: ${APP_DB_PASSWORD:postgres}
   r2dbc:
-    url: r2dbc:postgresql://${APP_DB_HOST:localhost}:${APP_DB_PORT:5432}/${APP_DB_NAME:intranet_chat}
+    url: r2dbc:postgresql://${APP_DB_HOST:localhost}:${APP_DB_PORT:5433}/${APP_DB_NAME:intranet_chat}
     username: ${APP_DB_USER:postgres}
     password: ${APP_DB_PASSWORD:postgres}
   data:
@@ -14,9 +14,15 @@ spring:
       host: ${APP_REDIS_HOST:localhost}
       port: ${APP_REDIS_PORT:6379}
       timeout: 2s
+      repositories:
+        enabled: false
   flyway:
     enabled: true
     locations: classpath:db/migration
+    # Use the same JDBC URL as the app so migrations always target the DB R2DBC uses.
+    url: ${spring.datasource.url}
+    user: ${spring.datasource.username}
+    password: ${spring.datasource.password}
   jackson:
     default-property-inclusion: non_null
 
@@ -42,10 +48,12 @@ management:
 info:
   app:
     name: ${spring.application.name}
-    description: Intranet chat API (Phase 1 foundation)
+    description: Intranet chat API
 
 app:
   security:
     jwt:
       # Base64-encoded 32-byte key (HS256). Override via APP_JWT_SECRET in all non-local environments.
       secret: ${APP_JWT_SECRET:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
+      issuer: ${APP_JWT_ISSUER:intranet-chat}
+      access-token-expiration-seconds: ${APP_JWT_EXPIRATION_SECONDS:3600}
