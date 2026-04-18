@@ -224,7 +224,7 @@ export function ConversationThread({ conversationId }: Props) {
             <h2 className="text-xl font-semibold text-gray-900">{threadTitle(conv)}</h2>
             <span
               className="text-xs text-gray-400"
-              title={`Realtime WebSocket: ${socketUrl} (token in query). Must reach the Spring app on port 8080.`}
+              title={`Realtime WebSocket: ${socketUrl}?token=… — default dev uses Next proxy (same port as the UI) to Spring on :8080.`}
             >
               {status === "open"
                 ? "Live"
@@ -243,10 +243,14 @@ export function ConversationThread({ conversationId }: Props) {
               ) : lastDisconnect?.code === 0 ? (
                 <>{lastDisconnect.reason}. </>
               ) : null}
-              WebSocket target: <code className="rounded bg-amber-100 px-1">{socketUrl}</code>. Match
-              your API host via <code className="rounded bg-amber-100 px-1">NEXT_PUBLIC_API_BASE_URL</code>{" "}
-              or <code className="rounded bg-amber-100 px-1">NEXT_PUBLIC_WS_ORIGIN</code>. Ensure the
-              backend is on :8080 and Redis is running, then restart Spring.
+              Target: <code className="rounded bg-amber-100 px-1">{socketUrl}</code> (with{" "}
+              <code className="rounded bg-amber-100 px-1">?token=…</code>). Default: same origin as this
+              page (Next rewrites <code className="rounded bg-amber-100 px-1">/ws</code> to Spring). If
+              you need a direct socket, set{" "}
+              <code className="rounded bg-amber-100 px-1">NEXT_PUBLIC_WS_ORIGIN=ws://localhost:8080</code>.
+              Restart <code className="rounded bg-amber-100 px-1">npm run dev</code> after changing{" "}
+              <code className="rounded bg-amber-100 px-1">next.config.js</code>. Ensure Spring is on :8080
+              and Redis is up.
             </p>
           ) : null}
           {convError ? (

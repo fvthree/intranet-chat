@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.CloseStatus;
 import org.springframework.web.reactive.socket.WebSocketHandler;
@@ -17,6 +19,8 @@ import reactor.core.publisher.Mono;
 
 @Component
 public class RealtimeWebSocketHandler implements WebSocketHandler {
+
+  private static final Logger log = LoggerFactory.getLogger(RealtimeWebSocketHandler.class);
 
   private final ReactiveJwtDecoder jwtDecoder;
   private final PresenceService presenceService;
@@ -36,8 +40,10 @@ public class RealtimeWebSocketHandler implements WebSocketHandler {
 
   @Override
   public Mono<Void> handle(WebSocketSession session) {
+    log.info("WebSocket handler sessionId={} uri={}", session.getId(), session.getHandshakeInfo().getUri());
     String token = extractAccessToken(session);
     if (token == null) {
+      log.warn("WebSocket closed: missing token query param");
       return session.close(
           CloseStatus.BAD_DATA.withReason("Missing token (use ?token=<jwt> or ?access_token=<jwt>)"));
     }
@@ -45,12 +51,15 @@ public class RealtimeWebSocketHandler implements WebSocketHandler {
         .decode(token)
         .flatMap(jwt -> connect(UUID.fromString(jwt.getSubject()), session))
         .onErrorResume(
-            ex ->
-                session.close(
-                    CloseStatus.NOT_ACCEPTABLE.withReason("Invalid or expired token")));
+            ex -> {
+              log.warn("WebSocket error: {}", ex.toString(), ex);
+              return session.close(
+                  CloseStatus.NOT_ACCEPTABLE.withReason("Invalid token or session error"));
+            });
   }
 
   private Mono<Void> connect(UUID userId, WebSocketSession session) {
+    log.info("WebSocket authenticated userId={} sessionId={}", userId, session.getId());
     registry.add(userId, session);
     return presencePayload(userId, "ONLINE")
         .flatMap(
@@ -63,15 +72,17 @@ public class RealtimeWebSocketHandler implements WebSocketHandler {
   }
 
   private Mono<Void> runSession(UUID userId, WebSocketSession session) {
-    Mono<Void> inbound = session.receive().then();
+    // One subscription to session.receive() only. Mono.when + takeUntilOther(inbound) would
+    // subscribe twice to a cold Mono and trigger Reactor Netty "Rejecting additional inbound receiver".
+    Mono<Void> inboundDone = session.receive().then().share();
     Mono<Void> heartbeat =
         Flux.interval(Duration.ofSeconds(45))
             .concatMap(
                 tick ->
                     presenceService.touchOnline(userId).onErrorResume(ex -> Mono.empty()))
-            .takeUntilOther(inbound)
+            .takeUntilOther(inboundDone)
             .then();
-    return Mono.when(inbound, heartbeat)
+    return Mono.when(inboundDone, heartbeat)
         .then(Mono.defer(() -> onSessionClosed(userId, session)));
   }
 

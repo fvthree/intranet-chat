@@ -14,15 +14,27 @@ export function getApiBaseUrl(): string {
   return raw.replace(/\/$/, "");
 }
 
+function isLoopbackHostname(hostname: string): boolean {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]";
+}
+
 /**
- * Origin for WebSocket (`ws:` / `wss:`), no path. Browsers cannot use the HTTP `/api` proxy for WS.
+ * Origin for WebSocket (`ws:` / `wss:`), no path.
  *
- * When `NEXT_PUBLIC_API_BASE_URL` is unset, prefer `NEXT_PUBLIC_WS_ORIGIN`, otherwise (in the
- * browser) use the **same hostname as the page** on port 8080 — e.g. `localhost:3000` →
- * `ws://localhost:8080`. A fixed `ws://127.0.0.1:8080` breaks some setups where the UI is opened
- * as `localhost` and the socket must match.
+ * - Optional `NEXT_PUBLIC_WS_ORIGIN` — explicit override.
+ * - If `NEXT_PUBLIC_API_BASE_URL` is set — derive `ws(s)://` + host/port from that URL.
+ * - Else on **loopback** (`localhost` / `127.0.0.1` / `[::1]`) — `ws(s)://127.0.0.1:8080`
+ *   (always IPv4: on Windows, `localhost` can resolve to `::1` while the JVM listens on IPv4 only,
+ *   so the handshake never hits Spring and you see 1005 with no server logs).
+ * - Else (e.g. LAN IP) — same host/port as the page so `/ws` can be proxied by Next.
+ * - SSR fallback: `ws://127.0.0.1:8080`.
  */
 export function getWebSocketOrigin(): string {
+  const explicit = process.env.NEXT_PUBLIC_WS_ORIGIN?.trim();
+  if (explicit) {
+    return explicit.replace(/\/$/, "");
+  }
+
   const api = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   if (api) {
     try {
@@ -33,12 +45,14 @@ export function getWebSocketOrigin(): string {
       /* fall through */
     }
   }
-  const explicit = process.env.NEXT_PUBLIC_WS_ORIGIN?.trim();
-  if (explicit) {
-    return explicit.replace(/\/$/, "");
-  }
+
   if (typeof window !== "undefined") {
-    return `ws://${window.location.hostname}:8080`;
+    const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const host = window.location.hostname;
+    if (isLoopbackHostname(host)) {
+      return `${scheme}://127.0.0.1:8080`;
+    }
+    return `${scheme}://${window.location.host}`;
   }
   return "ws://127.0.0.1:8080";
 }

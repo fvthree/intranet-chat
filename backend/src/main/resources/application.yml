@@ -1,3 +1,7 @@
+logging:
+  level:
+    com.intranet.chat: INFO
+
 spring:
   application:
     name: intranet-chat

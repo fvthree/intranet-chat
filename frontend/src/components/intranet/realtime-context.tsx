@@ -98,7 +98,12 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
 
       try {
         const url = buildWebSocketUrl(token);
+        setSocketUrl(`${getWebSocketOrigin()}/ws`);
         setStatus("connecting");
+        if (process.env.NODE_ENV === "development") {
+          const safe = url.replace(/([?&]token=)[^&]*/g, "$1(redacted)");
+          console.info("[intranet-chat] WebSocket connecting:", safe);
+        }
         const ws = new WebSocket(url);
         wsRef.current = ws;
 
@@ -139,9 +144,13 @@ export function RealtimeProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    connect();
+    // Brief delay avoids React Strict Mode double-mount closing a socket immediately (often seen as 1005).
+    const bootTimer = window.setTimeout(() => {
+      connect();
+    }, 50);
 
     return () => {
+      window.clearTimeout(bootTimer);
       stoppedRef.current = true;
       clearReconnectTimer();
       attemptRef.current = 0;

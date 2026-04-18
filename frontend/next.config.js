@@ -13,7 +13,12 @@ const nextConfig = {
    */
   async rewrites() {
     const backend = process.env.BACKEND_ORIGIN ?? "http://127.0.0.1:8080";
-    return [{ source: "/api/:path*", destination: `${backend}/api/:path*` }];
+    return [
+      { source: "/api/:path*", destination: `${backend}/api/:path*` },
+      // WebSocket upgrade proxied to Spring so the browser can use same-origin ws://localhost:3000/ws
+      // (avoids cross-port issues and close code 1005 in many dev setups).
+      { source: "/ws", destination: `${backend.replace(/\/$/, "")}/ws` },
+    ];
   },
 };
 
