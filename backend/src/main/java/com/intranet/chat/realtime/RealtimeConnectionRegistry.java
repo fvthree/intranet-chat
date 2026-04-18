@@ -46,7 +46,15 @@ public class RealtimeConnectionRegistry {
       return Mono.empty().then();
     }
     return Flux.fromIterable(set)
-        .flatMap(s -> s.send(Flux.just(s.textMessage(jsonPayload))))
+        .flatMap(
+            session ->
+                session
+                    .send(Flux.just(session.textMessage(jsonPayload)))
+                    .onErrorResume(
+                        err -> {
+                          remove(userId, session);
+                          return Mono.empty();
+                        }))
         .then();
   }
 

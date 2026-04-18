@@ -5,6 +5,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import { intranetRoutes } from "@/config/intranet-routes";
 import { INTRANET_SEED_USERS } from "@/config/intranet-seed-users";
 import { useCurrentUser } from "@/components/intranet/current-user-context";
+import { useRealtime } from "@/components/intranet/realtime-context";
 import { getConversation } from "@/lib/intranet-api/conversations";
 import { listMessages, markConversationRead, sendMessage } from "@/lib/intranet-api/messages";
 import type { ConversationResponse, MessageResponse } from "@/lib/intranet-api/types";
@@ -51,6 +52,7 @@ type Props = { conversationId: string };
 
 export function ConversationThread({ conversationId }: Props) {
   const { user } = useCurrentUser();
+  const { status, subscribe, lastDisconnect, socketUrl } = useRealtime();
   const [conv, setConv] = useState<ConversationResponse | null>(null);
   const [convError, setConvError] = useState<string | null>(null);
 
@@ -130,6 +132,22 @@ export function ConversationThread({ conversationId }: Props) {
     });
   }, [conversationId, loading, messages.length]);
 
+  useEffect(() => {
+    return subscribe((ev) => {
+      if (ev.type !== "MESSAGE_NEW") return;
+      if (ev.conversationId.toLowerCase() !== conversationId.toLowerCase()) return;
+      const msg = ev.message;
+      setMessages((prev) => {
+        if (prev.some((m) => m.id === msg.id)) return prev;
+        return [...prev, msg].sort(sortByTimeAsc);
+      });
+      shouldStickToBottom.current = true;
+      if (user?.id && msg.senderId !== user.id) {
+        void markConversationRead(conversationId, {}).catch(() => {});
+      }
+    });
+  }, [conversationId, subscribe, user?.id]);
+
   useLayoutEffect(() => {
     if (!shouldStickToBottom.current || !bottomRef.current) return;
     bottomRef.current.scrollIntoView({ block: "end" });
@@ -202,7 +220,35 @@ export function ConversationThread({ conversationId }: Props) {
     <div className="flex min-h-[60vh] flex-col gap-3">
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-gray-100 pb-3">
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">{threadTitle(conv)}</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xl font-semibold text-gray-900">{threadTitle(conv)}</h2>
+            <span
+              className="text-xs text-gray-400"
+              title={`Realtime WebSocket: ${socketUrl} (token in query). Must reach the Spring app on port 8080.`}
+            >
+              {status === "open"
+                ? "Live"
+                : status === "connecting"
+                  ? "Connecting…"
+                  : "Reconnecting…"}
+            </span>
+          </div>
+          {status === "closed" ? (
+            <p className="mt-1 max-w-2xl text-xs text-amber-800">
+              {lastDisconnect && lastDisconnect.code !== 0 ? (
+                <>
+                  Last close: {lastDisconnect.code}
+                  {lastDisconnect.reason ? ` — ${lastDisconnect.reason}` : ""}.{" "}
+                </>
+              ) : lastDisconnect?.code === 0 ? (
+                <>{lastDisconnect.reason}. </>
+              ) : null}
+              WebSocket target: <code className="rounded bg-amber-100 px-1">{socketUrl}</code>. Match
+              your API host via <code className="rounded bg-amber-100 px-1">NEXT_PUBLIC_API_BASE_URL</code>{" "}
+              or <code className="rounded bg-amber-100 px-1">NEXT_PUBLIC_WS_ORIGIN</code>. Ensure the
+              backend is on :8080 and Redis is running, then restart Spring.
+            </p>
+          ) : null}
           {convError ? (
             <p className="mt-1 text-sm text-amber-800">{convError}</p>
           ) : (

@@ -57,7 +57,8 @@ public class RealtimeWebSocketHandler implements WebSocketHandler {
             json ->
                 presenceService
                     .touchOnline(userId)
-                    .then(registry.broadcastExcept(userId, json)))
+                    .onErrorResume(ex -> Mono.empty())
+                    .then(registry.broadcastExcept(userId, json).onErrorResume(ex -> Mono.empty())))
         .then(runSession(userId, session));
   }
 
@@ -65,7 +66,9 @@ public class RealtimeWebSocketHandler implements WebSocketHandler {
     Mono<Void> inbound = session.receive().then();
     Mono<Void> heartbeat =
         Flux.interval(Duration.ofSeconds(45))
-            .concatMap(tick -> presenceService.touchOnline(userId))
+            .concatMap(
+                tick ->
+                    presenceService.touchOnline(userId).onErrorResume(ex -> Mono.empty()))
             .takeUntilOther(inbound)
             .then();
     return Mono.when(inbound, heartbeat)
@@ -82,7 +85,8 @@ public class RealtimeWebSocketHandler implements WebSocketHandler {
             json ->
                 presenceService
                     .setOffline(userId)
-                    .then(registry.broadcastExcept(userId, json)));
+                    .onErrorResume(ex -> Mono.empty())
+                    .then(registry.broadcastExcept(userId, json).onErrorResume(ex -> Mono.empty())));
   }
 
   private Mono<String> presencePayload(UUID userId, String status) {

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useRealtime } from "@/components/intranet/realtime-context";
 import { intranetRoutes } from "@/config/intranet-routes";
 import { listConversations } from "@/lib/intranet-api/conversations";
 import type { ConversationListItem } from "@/lib/intranet-api/types";
@@ -38,12 +39,16 @@ export function ConversationList({
   /** Increment to refetch without remounting (e.g. after creating a conversation without navigating away). */
   refreshToken?: number;
 }) {
+  const { subscribe } = useRealtime();
   const [items, setItems] = useState<ConversationListItem[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async (options?: { silent?: boolean }) => {
+    const silent = options?.silent === true;
+    if (!silent) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const list = await listConversations();
@@ -52,13 +57,21 @@ export function ConversationList({
       setItems(null);
       setError(e instanceof Error ? e.message : "Failed to load conversations");
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
     void load();
   }, [load, refreshToken]);
+
+  useEffect(() => {
+    return subscribe((ev) => {
+      if (ev.type === "MESSAGE_NEW") void load({ silent: true });
+    });
+  }, [subscribe, load]);
 
   if (loading) {
     return (

@@ -1,6 +1,7 @@
 import HydrogenLayout from "@/layouts/hydrogen/layout";
 import { RequireAuth } from "@/components/intranet/require-auth";
 import { CurrentUserProvider } from "@/components/intranet/current-user-context";
+import { RealtimeProvider } from "@/components/intranet/realtime-context";
 
 export default function IntranetDashboardLayout({
   children,
@@ -10,7 +11,9 @@ export default function IntranetDashboardLayout({
   return (
     <CurrentUserProvider>
       <HydrogenLayout intranetChrome>
-        <RequireAuth>{children}</RequireAuth>
+        <RequireAuth>
+          <RealtimeProvider>{children}</RealtimeProvider>
+        </RequireAuth>
       </HydrogenLayout>
     </CurrentUserProvider>
   );

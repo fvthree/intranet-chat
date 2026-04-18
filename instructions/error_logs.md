@@ -37,108 +37,70 @@ D:\RJgit\intranet-chat\intranet-chat\backend>mvn spring-boot:run
 
  :: Spring Boot ::                (v3.4.4)
 
-2026-04-18T16:02:10.341+08:00  INFO 20884 --- [intranet-chat] [           main] c.intranet.chat.IntranetChatApplication  : Starting IntranetChatApplication using Java 21.0.10 with PID 20884 (D:\RJgit\intranet-chat\intranet-chat\backend\target\classes started by kadja in D:\RJgit\intranet-chat\intranet-chat\backend)
-2026-04-18T16:02:10.343+08:00  INFO 20884 --- [intranet-chat] [           main] c.intranet.chat.IntranetChatApplication  : No active profile set, falling back to 1 default profile: "default"
-2026-04-18T16:02:10.836+08:00  INFO 20884 --- [intranet-chat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
-2026-04-18T16:02:10.837+08:00  INFO 20884 --- [intranet-chat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data R2DBC repositories in DEFAULT mode.
-2026-04-18T16:02:10.941+08:00  INFO 20884 --- [intranet-chat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 99 ms. Found 4 R2DBC repository interfaces.
-2026-04-18T16:02:12.378+08:00  INFO 20884 --- [intranet-chat] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
-2026-04-18T16:02:12.761+08:00  INFO 20884 --- [intranet-chat] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:5433/intranet_chat (PostgreSQL 16.13)
-2026-04-18T16:02:12.811+08:00  INFO 20884 --- [intranet-chat] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 6 migrations (execution time 00:00.024s)
-2026-04-18T16:02:12.847+08:00  INFO 20884 --- [intranet-chat] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 6
-2026-04-18T16:02:12.849+08:00  INFO 20884 --- [intranet-chat] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
-2026-04-18T16:02:12.995+08:00  INFO 20884 --- [intranet-chat] [           main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 8080 (http)
-2026-04-18T16:02:13.004+08:00  INFO 20884 --- [intranet-chat] [           main] c.intranet.chat.IntranetChatApplication  : Started IntranetChatApplication in 3.0 seconds (process running for 3.276)
-2026-04-18T16:02:26.761+08:00 ERROR 20884 --- [intranet-chat] [ctor-tcp-nio-10] c.i.c.c.e.GlobalExceptionHandler         : Unhandled exception
+2026-04-18T16:33:24.002+08:00  INFO 21104 --- [intranet-chat] [           main] c.intranet.chat.IntranetChatApplication  : Starting IntranetChatApplication using Java 21.0.10 with PID 21104 (D:\RJgit\intranet-chat\intranet-chat\backend\target\classes started by kadja in D:\RJgit\intranet-chat\intranet-chat\backend)
+2026-04-18T16:33:24.003+08:00  INFO 21104 --- [intranet-chat] [           main] c.intranet.chat.IntranetChatApplication  : No active profile set, falling back to 1 default profile: "default"
+2026-04-18T16:33:24.503+08:00  INFO 21104 --- [intranet-chat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-18T16:33:24.503+08:00  INFO 21104 --- [intranet-chat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data R2DBC repositories in DEFAULT mode.
+2026-04-18T16:33:24.605+08:00  INFO 21104 --- [intranet-chat] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 100 ms. Found 4 R2DBC repository interfaces.
+2026-04-18T16:33:26.146+08:00  INFO 21104 --- [intranet-chat] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-04-18T16:33:26.539+08:00  INFO 21104 --- [intranet-chat] [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://localhost:5433/intranet_chat (PostgreSQL 16.13)
+2026-04-18T16:33:26.592+08:00  INFO 21104 --- [intranet-chat] [           main] o.f.core.internal.command.DbValidate     : Successfully validated 6 migrations (execution time 00:00.026s)
+2026-04-18T16:33:26.630+08:00  INFO 21104 --- [intranet-chat] [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 6
+2026-04-18T16:33:26.633+08:00  INFO 21104 --- [intranet-chat] [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-04-18T16:33:26.770+08:00  INFO 21104 --- [intranet-chat] [           main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 8080 (http)
+2026-04-18T16:33:26.770+08:00  INFO 21104 --- [intranet-chat] [           main] c.intranet.chat.IntranetChatApplication  : Started IntranetChatApplication in 3.113 seconds (process running for 3.405)
+2026-04-18T16:33:34.030+08:00 ERROR 21104 --- [intranet-chat] [actor-tcp-nio-5] c.i.c.c.e.GlobalExceptionHandler         : Unhandled exception
 
-org.springframework.dao.TransientDataAccessResourceException: Failed to update table [conversations]; Row with Id [e6c1beff-2fe2-45f5-bf5f-3b432efb4bcb] does not exist
-        at org.springframework.data.r2dbc.core.R2dbcEntityTemplate.lambda$doUpdate$13(R2dbcEntityTemplate.java:671) ~[spring-data-r2dbc-3.4.4.jar:3.4.4]
+reactor.netty.channel.AbortedException: Connection has been closed BEFORE send operation
+        at reactor.netty.channel.AbortedException.beforeSend(AbortedException.java:59) ~[reactor-netty-core-1.2.4.jar:1.2.4]
         Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException:
 Error has been observed at the following site(s):
-        *__checkpoint Γçó Handler com.intranet.chat.conversation.ConversationController#createDirect(CreateDirectConversationRequest) [DispatcherHandler]
+        *__checkpoint Γçó Handler com.intranet.chat.conversation.ConversationController#sendMessage(UUID, SendMessageRequest) [DispatcherHandler]
 Original Stack Trace:
-                at org.springframework.data.r2dbc.core.R2dbcEntityTemplate.lambda$doUpdate$13(R2dbcEntityTemplate.java:671) ~[spring-data-r2dbc-3.4.4.jar:3.4.4]
-                at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:113) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.netty.channel.AbortedException.beforeSend(AbortedException.java:59) ~[reactor-netty-core-1.2.4.jar:1.2.4]
+                at reactor.netty.http.server.HttpServerOperations.then(HttpServerOperations.java:677) ~[reactor-netty-http-1.2.4.jar:1.2.4]
+                at reactor.netty.ReactorNetty$OutboundThen.<init>(ReactorNetty.java:744) ~[reactor-netty-core-1.2.4.jar:1.2.4]
+                at reactor.netty.ReactorNetty$OutboundThen.<init>(ReactorNetty.java:733) ~[reactor-netty-core-1.2.4.jar:1.2.4]
+                at reactor.netty.NettyOutbound.then(NettyOutbound.java:358) ~[reactor-netty-core-1.2.4.jar:1.2.4]
+                at reactor.netty.channel.ChannelOperations.sendObject(ChannelOperations.java:314) ~[reactor-netty-core-1.2.4.jar:1.2.4]
+                at reactor.netty.NettyOutbound.sendObject(NettyOutbound.java:246) ~[reactor-netty-core-1.2.4.jar:1.2.4]
+                at org.springframework.web.reactive.socket.adapter.ReactorNettyWebSocketSession.send(ReactorNettyWebSocketSession.java:110) ~[spring-webflux-6.2.5.jar:6.2.5]
+                at com.intranet.chat.realtime.RealtimeConnectionRegistry.lambda$sendToUser$1(RealtimeConnectionRegistry.java:49) ~[classes/:na]
+                at reactor.core.publisher.FluxFlatMap$FlatMapMain.onNext(FluxFlatMap.java:388) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxIterable$IterableSubscription.slowPath(FluxIterable.java:335) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxIterable$IterableSubscription.request(FluxIterable.java:294) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxFlatMap$FlatMapMain.onSubscribe(FluxFlatMap.java:373) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:201) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:83) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.Mono.subscribe(Mono.java:4576) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxFlatMap$FlatMapMain.onNext(FluxFlatMap.java:430) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxFilter$FilterSubscriber.onNext(FluxFilter.java:113) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxMap$MapConditionalSubscriber.onNext(FluxMap.java:224) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onNext(FluxUsingWhen.java:348) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.innerNext(FluxConcatMapNoPrefetch.java:259) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxConcatMap$ConcatMapInner.onNext(FluxConcatMap.java:865) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxConcatMap$WeakScalarSubscription.request(FluxConcatMap.java:480) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.set(Operators.java:2367) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.onNext(FluxConcatMapNoPrefetch.java:202) ~[reactor-core-3.7.4.jar:3.7.4]
                 at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoUsingWhen$MonoUsingWhenSubscriber.deferredComplete(MonoUsingWhen.java:268) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxUsingWhen$CommitInner.onComplete(FluxUsingWhen.java:532) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.onComplete(Operators.java:2231) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.onComplete(Operators.java:2231) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:210) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:210) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.pool.SimpleDequePool.maybeRecycleAndDrain(SimpleDequePool.java:547) ~[reactor-pool-1.1.2.jar:1.1.2]
-                at reactor.pool.SimpleDequePool$QueuePoolRecyclerInner.onComplete(SimpleDequePool.java:788) ~[reactor-pool-1.1.2.jar:1.1.2]
-                at reactor.core.publisher.Operators.complete(Operators.java:137) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoEmpty.subscribe(MonoEmpty.java:46) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Mono.subscribe(Mono.java:4576) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.pool.SimpleDequePool$QueuePoolRecyclerMono.subscribe(SimpleDequePool.java:901) ~[reactor-pool-1.1.2.jar:1.1.2]
-                at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:53) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:241) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:204) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Operators.complete(Operators.java:137) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoEmpty.subscribe(MonoEmpty.java:46) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Mono.subscribe(Mono.java:4576) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:265) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:53) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:241) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:204) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreElements$IgnoreElementsSubscriber.onComplete(MonoIgnoreElements.java:89) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onComplete(FluxHandleFuseable.java:239) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoSupplier$MonoSupplierSubscription.request(MonoSupplier.java:148) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.request(FluxHandleFuseable.java:260) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreElements$IgnoreElementsSubscriber.onSubscribe(MonoIgnoreElements.java:72) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onSubscribe(FluxHandleFuseable.java:164) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoSupplier.subscribe(MonoSupplier.java:48) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Mono.subscribe(Mono.java:4576) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:265) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:76) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:53) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Mono.subscribe(Mono.java:4576) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onError(FluxOnErrorResume.java:103) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoIgnoreElements$IgnoreElementsSubscriber.onError(MonoIgnoreElements.java:84) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxMap$MapSubscriber.onError(FluxMap.java:134) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxFilter$FilterSubscriber.onError(FluxFilter.java:157) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxFilter$FilterConditionalSubscriber.onError(FluxFilter.java:291) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxMap$MapConditionalSubscriber.onError(FluxMap.java:265) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Operators.error(Operators.java:198) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoError.subscribe(MonoError.java:53) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoDeferContextual.subscribe(MonoDeferContextual.java:55) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:76) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:53) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Mono.subscribe(Mono.java:4576) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onComplete(FluxUsingWhen.java:389) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2098) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoStreamCollector$StreamCollectorSubscriber.onComplete(MonoStreamCollector.java:159) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxFlatMap$FlatMapMain.checkTerminated(FluxFlatMap.java:850) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxFlatMap$FlatMapMain.drainLoop(FluxFlatMap.java:612) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxFlatMap$FlatMapMain.innerComplete(FluxFlatMap.java:898) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxFlatMap$FlatMapInner.onComplete(FluxFlatMap.java:1001) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onComplete(FluxHandleFuseable.java:239) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2098) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoCollectList$MonoCollectListSubscriber.onComplete(MonoCollectList.java:118) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxHandle$HandleSubscriber.onComplete(FluxHandle.java:223) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.MonoFlatMapMany$FlatMapManyInner.onComplete(MonoFlatMapMany.java:261) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onComplete(FluxHandleFuseable.java:239) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onComplete(FluxFilterFuseable.java:391) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onComplete(FluxContextWrite.java:126) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxPeekFuseable$PeekConditionalSubscriber.onComplete(FluxPeekFuseable.java:940) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxPeekFuseable$PeekConditionalSubscriber.onComplete(FluxPeekFuseable.java:940) ~[reactor-core-3.7.4.jar:3.7.4]
-                at io.r2dbc.postgresql.util.FluxDiscardOnCancel$FluxDiscardOnCancelSubscriber.onComplete(FluxDiscardOnCancel.java:104) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
-                at reactor.core.publisher.FluxDoFinally$DoFinallySubscriber.onComplete(FluxDoFinally.java:128) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxHandle$HandleSubscriber.onComplete(FluxHandle.java:223) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxCreate$BaseSink.complete(FluxCreate.java:465) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxCreate$BufferAsyncSink.drain(FluxCreate.java:871) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxCreate$BufferAsyncSink.complete(FluxCreate.java:819) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxCreate$SerializedFluxSink.drainLoop(FluxCreate.java:249) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxCreate$SerializedFluxSink.drain(FluxCreate.java:215) ~[reactor-core-3.7.4.jar:3.7.4]
-                at reactor.core.publisher.FluxCreate$SerializedFluxSink.complete(FluxCreate.java:206) ~[reactor-core-3.7.4.jar:3.7.4]
-                at io.r2dbc.postgresql.client.ReactorNettyClient$Conversation.complete(ReactorNettyClient.java:680) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
-                at io.r2dbc.postgresql.client.ReactorNettyClient$BackendMessageSubscriber.emit(ReactorNettyClient.java:946) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
+                at reactor.core.publisher.FluxUsingWhen$UsingWhenSubscriber.onNext(FluxUsingWhen.java:348) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxFlatMap$FlatMapMain.tryEmit(FluxFlatMap.java:547) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxFlatMap$FlatMapInner.onNext(FluxFlatMap.java:988) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:129) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.MonoFlatMapMany$FlatMapManyInner.onNext(MonoFlatMapMany.java:251) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxHandleFuseable$HandleFuseableSubscriber.onNext(FluxHandleFuseable.java:194) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onNext(FluxFilterFuseable.java:337) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxPeekFuseable$PeekConditionalSubscriber.onNext(FluxPeekFuseable.java:854) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxPeekFuseable$PeekConditionalSubscriber.onNext(FluxPeekFuseable.java:854) ~[reactor-core-3.7.4.jar:3.7.4]
+                at io.r2dbc.postgresql.util.FluxDiscardOnCancel$FluxDiscardOnCancelSubscriber.onNext(FluxDiscardOnCancel.java:91) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
+                at reactor.core.publisher.FluxDoFinally$DoFinallySubscriber.onNext(FluxDoFinally.java:113) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:129) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxCreate$BufferAsyncSink.drain(FluxCreate.java:880) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxCreate$BufferAsyncSink.next(FluxCreate.java:805) ~[reactor-core-3.7.4.jar:3.7.4]
+                at reactor.core.publisher.FluxCreate$SerializedFluxSink.next(FluxCreate.java:163) ~[reactor-core-3.7.4.jar:3.7.4]
+                at io.r2dbc.postgresql.client.ReactorNettyClient$Conversation.emit(ReactorNettyClient.java:696) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
+                at io.r2dbc.postgresql.client.ReactorNettyClient$BackendMessageSubscriber.emit(ReactorNettyClient.java:948) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
                 at io.r2dbc.postgresql.client.ReactorNettyClient$BackendMessageSubscriber.onNext(ReactorNettyClient.java:822) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
                 at io.r2dbc.postgresql.client.ReactorNettyClient$BackendMessageSubscriber.onNext(ReactorNettyClient.java:728) ~[r2dbc-postgresql-1.0.7.RELEASE.jar:1.0.7.RELEASE]
                 at reactor.core.publisher.FluxHandle$HandleSubscriber.onNext(FluxHandle.java:129) ~[reactor-core-3.7.4.jar:3.7.4]
@@ -153,7 +115,9 @@ Original Stack Trace:
                 at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.119.Final.jar:4.1.119.Final]
                 at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.119.Final.jar:4.1.119.Final]
                 at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346) ~[netty-codec-4.1.119.Final.jar:4.1.119.Final]
-                at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318) ~[netty-codec-4.1.119.Final.jar:4.1.119.Final]
+                at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:333) ~[netty-codec-4.1.119.Final.jar:4.1.119.Final]
+                at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:455) ~[netty-codec-4.1.119.Final.jar:4.1.119.Final]
+                at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290) ~[netty-codec-4.1.119.Final.jar:4.1.119.Final]
                 at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.119.Final.jar:4.1.119.Final]
                 at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.119.Final.jar:4.1.119.Final]
                 at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.119.Final.jar:4.1.119.Final]

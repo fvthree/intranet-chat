@@ -70,7 +70,10 @@ public class MessageService {
                       .flatMap(
                           saved ->
                               touchConversation(conversationId, now)
-                                  .then(realtimeMessagePublisher.publishNewMessage(saved))
+                                  .then(
+                                      realtimeMessagePublisher
+                                          .publishNewMessage(saved)
+                                          .onErrorResume(err -> Mono.empty()))
                                   .thenReturn(saved));
                 }))
         .map(MessageResponse::from);
