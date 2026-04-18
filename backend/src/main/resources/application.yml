@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: intranet-chat
+  datasource:
+    url: jdbc:postgresql://${APP_DB_HOST:localhost}:${APP_DB_PORT:5432}/${APP_DB_NAME:intranet_chat}
+    username: ${APP_DB_USER:postgres}
+    password: ${APP_DB_PASSWORD:postgres}
+  r2dbc:
+    url: r2dbc:postgresql://${APP_DB_HOST:localhost}:${APP_DB_PORT:5432}/${APP_DB_NAME:intranet_chat}
+    username: ${APP_DB_USER:postgres}
+    password: ${APP_DB_PASSWORD:postgres}
+  data:
+    redis:
+      host: ${APP_REDIS_HOST:localhost}
+      port: ${APP_REDIS_PORT:6379}
+      timeout: 2s
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    description: Intranet chat API (Phase 1 foundation)
+
+app:
+  security:
+    jwt:
+      # Base64-encoded 32-byte key (HS256). Override via APP_JWT_SECRET in all non-local environments.
+      secret: ${APP_JWT_SECRET:MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=}
