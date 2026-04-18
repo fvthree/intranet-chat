@@ -28,14 +28,17 @@ public class ConversationController {
   private final CurrentUserId currentUserId;
   private final ConversationService conversationService;
   private final MessageService messageService;
+  private final ReadService readService;
 
   public ConversationController(
       CurrentUserId currentUserId,
       ConversationService conversationService,
-      MessageService messageService) {
+      MessageService messageService,
+      ReadService readService) {
     this.currentUserId = currentUserId;
     this.conversationService = conversationService;
     this.messageService = messageService;
+    this.readService = readService;
   }
 
   @GetMapping
@@ -59,6 +62,13 @@ public class ConversationController {
   @GetMapping("/{conversationId}")
   public Mono<ConversationResponse> get(@PathVariable UUID conversationId) {
     return currentUserId.get().flatMap(uid -> conversationService.getForParticipant(conversationId, uid));
+  }
+
+  @PostMapping("/{conversationId}/read")
+  public Mono<MarkReadResponse> markRead(
+      @PathVariable UUID conversationId,
+      @RequestBody(required = false) MarkReadRequest body) {
+    return currentUserId.get().flatMap(uid -> readService.markRead(conversationId, uid, body));
   }
 
   @PostMapping("/{conversationId}/messages")

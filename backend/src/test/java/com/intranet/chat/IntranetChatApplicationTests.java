@@ -535,4 +535,165 @@ class IntranetChatApplicationTests {
     }
     Assertions.assertTrue(hasDirect && hasChannel);
   }
+
+  @Test
+  void phase5_unreadCount_andMarkRead() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    String aliceToken = loginAccessToken("alice", "password");
+
+    String dmId =
+        objectMapper
+            .readTree(
+                webTestClient
+                    .post()
+                    .uri("/api/conversations/direct")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .headers(h -> h.setBearerAuth(demoToken))
+                    .bodyValue(Map.of("otherUserId", ALICE_USER_ID))
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .returnResult()
+                    .getResponseBody())
+            .path("id")
+            .asText();
+
+    webTestClient
+        .post()
+        .uri("/api/conversations/{id}/messages", dmId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(h -> h.setBearerAuth(aliceToken))
+        .bodyValue(Map.of("content", "Hello from alice"))
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+    Assertions.assertEquals(
+        1L,
+        unreadCountForConversation(demoToken, dmId),
+        "demo should see one unread message from alice");
+
+    webTestClient
+        .post()
+        .uri("/api/conversations/{id}/read", dmId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(h -> h.setBearerAuth(demoToken))
+        .bodyValue(Map.of())
+        .exchange()
+        .expectStatus()
+        .isOk()
+        .expectBody()
+        .jsonPath("$.lastReadMessageId")
+        .exists();
+
+    Assertions.assertEquals(0L, unreadCountForConversation(demoToken, dmId));
+  }
+
+  @Test
+  void phase5_markReadOnlyAffectsCallingUser() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    String aliceToken = loginAccessToken("alice", "password");
+
+    String dmId =
+        objectMapper
+            .readTree(
+                webTestClient
+                    .post()
+                    .uri("/api/conversations/direct")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .headers(h -> h.setBearerAuth(demoToken))
+                    .bodyValue(Map.of("otherUserId", ALICE_USER_ID))
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .returnResult()
+                    .getResponseBody())
+            .path("id")
+            .asText();
+
+    webTestClient
+        .post()
+        .uri("/api/conversations/{id}/messages", dmId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(h -> h.setBearerAuth(aliceToken))
+        .bodyValue(Map.of("content", "Ping"))
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+    Assertions.assertEquals(1L, unreadCountForConversation(demoToken, dmId));
+
+    webTestClient
+        .post()
+        .uri("/api/conversations/{id}/read", dmId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(h -> h.setBearerAuth(aliceToken))
+        .bodyValue(Map.of())
+        .exchange()
+        .expectStatus()
+        .isOk();
+
+    Assertions.assertEquals(
+        1L,
+        unreadCountForConversation(demoToken, dmId),
+        "alice marking read must not change demo's unread state");
+  }
+
+  @Test
+  void phase5_nonParticipantCannotMarkRead() throws Exception {
+    String demoToken = loginAccessToken("demo", "password");
+    String aliceToken = loginAccessToken("alice", "password");
+
+    String soloId =
+        objectMapper
+            .readTree(
+                webTestClient
+                    .post()
+                    .uri("/api/conversations/channels")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .headers(h -> h.setBearerAuth(demoToken))
+                    .bodyValue(Map.of("name", "read-guard-test"))
+                    .exchange()
+                    .expectStatus()
+                    .isOk()
+                    .expectBody()
+                    .returnResult()
+                    .getResponseBody())
+            .path("id")
+            .asText();
+
+    webTestClient
+        .post()
+        .uri("/api/conversations/{id}/read", soloId)
+        .contentType(MediaType.APPLICATION_JSON)
+        .headers(h -> h.setBearerAuth(aliceToken))
+        .bodyValue(Map.of())
+        .exchange()
+        .expectStatus()
+        .isForbidden();
+  }
+
+  private long unreadCountForConversation(String bearerToken, String conversationId)
+      throws Exception {
+    byte[] body =
+        webTestClient
+            .get()
+            .uri("/api/conversations")
+            .headers(h -> h.setBearerAuth(bearerToken))
+            .exchange()
+            .expectStatus()
+            .isOk()
+            .expectBody()
+            .returnResult()
+            .getResponseBody();
+    JsonNode arr = objectMapper.readTree(body);
+    for (JsonNode n : arr) {
+      if (conversationId.equals(n.path("id").asText())) {
+        return n.path("unreadCount").asLong();
+      }
+    }
+    throw new AssertionError("conversation not in list: " + conversationId);
+  }
 }

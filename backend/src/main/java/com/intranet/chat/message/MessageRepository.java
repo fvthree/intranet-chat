@@ -12,4 +12,9 @@ public interface MessageRepository extends ReactiveCrudRepository<Message, UUID>
       UUID conversationId, Pageable pageable);
 
   Mono<Long> countByConversationIdAndDeletedIsFalse(UUID conversationId);
+
+  Mono<Message> findFirstByConversationIdAndDeletedIsFalseOrderByCreatedAtDesc(
+      UUID conversationId);
+
+  Mono<Message> findByIdAndConversationId(UUID id, UUID conversationId);
 }

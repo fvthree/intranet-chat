@@ -10,4 +10,5 @@ public record ConversationListItemResponse(
     UUID createdBy,
     Instant createdAt,
     Instant updatedAt,
+    long unreadCount,
     LastMessagePreview lastMessage) {}

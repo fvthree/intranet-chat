@@ -23,7 +23,31 @@ public class ConversationListingQuery {
         lm.id AS last_msg_id,
         LEFT(lm.content, 200) AS last_msg_content,
         lm.sender_id AS last_msg_sender_id,
-        lm.created_at AS last_msg_created_at
+        lm.created_at AS last_msg_created_at,
+        (
+          SELECT COUNT(*)::bigint
+          FROM messages m
+          WHERE m.conversation_id = c.id
+            AND NOT m.deleted
+            AND m.sender_id <> :userId
+            AND m.created_at >= cp.joined_at
+            AND (
+              cp.last_read_message_id IS NULL
+              OR NOT EXISTS (
+                SELECT 1 FROM messages mr
+                WHERE mr.id = cp.last_read_message_id
+                  AND mr.conversation_id = c.id
+                  AND NOT mr.deleted
+              )
+              OR (m.created_at, m.id) > (
+                SELECT m2.created_at, m2.id
+                FROM messages m2
+                WHERE m2.id = cp.last_read_message_id
+                  AND m2.conversation_id = c.id
+                  AND NOT m2.deleted
+              )
+            )
+        ) AS unread_count
       FROM conversations c
       INNER JOIN conversation_participants cp
         ON cp.conversation_id = c.id AND cp.user_id = :userId
@@ -61,6 +85,9 @@ public class ConversationListingQuery {
                 row.get("last_msg_content", String.class),
                 row.get("last_msg_sender_id", UUID.class),
                 row.get("last_msg_created_at", Instant.class));
+    Object unreadObj = row.get("unread_count");
+    long unread =
+        unreadObj instanceof Number ? ((Number) unreadObj).longValue() : 0L;
     return new ConversationListItemResponse(
         row.get("cid", UUID.class),
         row.get("ctype", String.class),
@@ -68,6 +95,7 @@ public class ConversationListingQuery {
         row.get("created_by", UUID.class),
         row.get("created_at", Instant.class),
         row.get("updated_at", Instant.class),
+        unread,
         last);
   }
 }

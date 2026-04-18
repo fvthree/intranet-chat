@@ -8,4 +8,7 @@ public interface ConversationParticipantRepository
     extends ReactiveCrudRepository<ConversationParticipant, UUID> {
 
   Mono<Boolean> existsByConversationIdAndUserId(UUID conversationId, UUID userId);
+
+  Mono<ConversationParticipant> findByConversationIdAndUserId(
+      UUID conversationId, UUID userId);
 }
