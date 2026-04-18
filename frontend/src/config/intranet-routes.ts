@@ -4,4 +4,5 @@ export const intranetRoutes = {
   /** Sign-in page is the app root (`/`). `/intranet/login` redirects there. */
   login: "/",
   dev: "/intranet/dev",
+  settings: "/intranet/settings",
 } as const;

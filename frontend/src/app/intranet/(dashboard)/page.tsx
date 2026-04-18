@@ -26,10 +26,17 @@ export default function IntranetHomePage() {
         </button>
       </div>
       <p className="text-gray-600">
-        Phase F2: you are signed in. Use the dev page to debug API calls, or continue with
-        later phases for conversations UI.
+        Phase F3: your name and username in the header and sidebar come from{" "}
+        <code className="rounded bg-gray-100 px-1 text-xs">GET /api/users/me</code>. Use the dev page
+        to debug API calls; conversation UI is a later phase.
       </p>
       <ul className="list-inside list-disc space-y-2 text-sm">
+        <li>
+          <Link href={intranetRoutes.settings} className="text-primary underline">
+            Settings
+          </Link>{" "}
+          (placeholder)
+        </li>
         <li>
           <Link href={intranetRoutes.dev} className="text-primary underline">
             API dev tools

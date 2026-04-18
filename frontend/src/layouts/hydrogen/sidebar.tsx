@@ -8,8 +8,15 @@ import { cn } from "@/utils/class-names";
 import { PiCaretDownBold } from "react-icons/pi";
 import SimpleBar from "@/components/ui/simplebar";
 import { menuItems } from "@/layouts/hydrogen/menu-items";
+import IntranetSidebarProfile from "@/components/intranet/intranet-sidebar-profile";
 
-export default function Sidebar({ className }: { className?: string }) {
+export default function Sidebar({
+  className,
+  intranetChrome,
+}: {
+  className?: string;
+  intranetChrome?: boolean;
+}) {
   const pathname = usePathname();
   return (
     <aside
@@ -28,7 +35,9 @@ export default function Sidebar({ className }: { className?: string }) {
         </Link>
       </div>
 
-      <SimpleBar className="h-[calc(100%-80px)]">
+      <SimpleBar
+        className={intranetChrome ? "h-[calc(100%-80px-88px)]" : "h-[calc(100%-80px)]"}
+      >
         <div className="mt-4 pb-3 3xl:mt-6">
           {menuItems.map((item, index) => {
             const isActive = pathname === (item?.href as string);
@@ -156,6 +165,7 @@ export default function Sidebar({ className }: { className?: string }) {
           })}
         </div>
       </SimpleBar>
+      {intranetChrome ? <IntranetSidebarProfile /> : null}
     </aside>
   );
 }
